@@ -40,7 +40,7 @@ To install Appdash into your Python path (i.e. so you can import it into your ow
 
 ```
 # Install Python-appdash:
-cd $GOPATH/src/sourcegraph.com/sourcegraph/appdash/python
+cd $GOPATH/src/github.com/tiancaiamao/appdash/python
 python setup.py install
 ```
 
@@ -57,7 +57,7 @@ If all is well with your setup, you should be able to change directory to `sourc
 appdash serve
 
 # Run the example script:
-cd $GOPATH/src/sourcegraph.com/sourcegraph/appdash/python
+cd $GOPATH/src/github.com/tiancaiamao/appdash/python
 ./example_twisted.py
 ```
 
@@ -70,6 +70,6 @@ If you prefer not to use Twisted, you can utilize the standard socket collector 
 appdash serve
 
 # Run the example script:
-cd $GOPATH/src/sourcegraph.com/sourcegraph/appdash/python
+cd $GOPATH/src/github.com/tiancaiamao/appdash/python
 ./example_socket.py
 ```

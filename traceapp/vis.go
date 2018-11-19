@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"time"
 
-	"sourcegraph.com/sourcegraph/appdash"
+	"github.com/tiancaiamao/appdash"
 
 	// Unmarshaling of events depends on the fact that they are registered with
 	// Appdash.
-	_ "sourcegraph.com/sourcegraph/appdash/httptrace"
-	_ "sourcegraph.com/sourcegraph/appdash/sqltrace"
+	_ "github.com/tiancaiamao/appdash/httptrace"
+	_ "github.com/tiancaiamao/appdash/sqltrace"
 )
 
 // errTimelineItemValidation is returned by timelineItem.Valid when either
@@ -101,8 +101,8 @@ func (a *App) d3timelineInner(t *appdash.Trace, depth int) ([]timelineItem, erro
 				// Continuing so frontend does not break due to current event missing start/end time values.
 				continue
 			}
-			start := e.Start().UnixNano() / int64(time.Millisecond)
-			end := e.End().UnixNano() / int64(time.Millisecond)
+			start := e.Start().UnixNano()
+			end := e.End().UnixNano()
 			ts := timelineItemTimespan{
 				Start: start,
 				End:   end,
@@ -125,7 +125,7 @@ func (a *App) d3timelineInner(t *appdash.Trace, depth int) ([]timelineItem, erro
 		}
 	}
 	for _, ts := range item.Times {
-		msec := time.Duration(item.Times[0].End-item.Times[0].Start) * time.Millisecond
+		msec := time.Duration(item.Times[0].End - item.Times[0].Start)
 		if msec > 0 {
 			ts.Label = fmt.Sprintf("%s (%s)", item.Label, msec)
 			ts.Duration = int64(msec)

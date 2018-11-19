@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"sourcegraph.com/sourcegraph/appdash"
+	"github.com/tiancaiamao/appdash"
 )
 
 var (

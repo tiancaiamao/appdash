@@ -2,7 +2,7 @@
 //
 // For information about Appdash see:
 //
-// https://sourcegraph.com/sourcegraph/appdash
+// https://github.com/tiancaiamao/appdash
 //
 // Demo mode
 //

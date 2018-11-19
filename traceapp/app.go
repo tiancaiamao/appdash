@@ -30,7 +30,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"sourcegraph.com/sourcegraph/appdash"
+	"github.com/tiancaiamao/appdash"
 	static "sourcegraph.com/sourcegraph/appdash-data"
 )
 

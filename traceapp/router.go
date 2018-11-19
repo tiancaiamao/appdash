@@ -5,7 +5,7 @@ import (
 	"net/url"
 
 	"github.com/gorilla/mux"
-	"sourcegraph.com/sourcegraph/appdash"
+	"github.com/tiancaiamao/appdash"
 )
 
 // Traceapp's route names.
