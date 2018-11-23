@@ -10,6 +10,7 @@ import (
 
 // Traceapp's route names.
 const (
+	ViewTrace             = "web.trace.view"
 	RootRoute             = "traceapp.root"               // route name for root
 	StaticRoute           = "traceapp.static"             // route name for static data files
 	TraceRoute            = "traceapp.trace"              // route name for a single trace page
@@ -32,6 +33,7 @@ func NewRouter(base *mux.Router) *Router {
 	if base == nil {
 		base = mux.NewRouter()
 	}
+	base.Path("/view").Methods("POST").Name(ViewTrace)
 	base.Path("/").Methods("GET").Name(RootRoute)
 	base.PathPrefix("/static/").Methods("GET").Name(StaticRoute)
 	base.Path("/traces/{Trace}").Methods("GET").Name(TraceRoute)

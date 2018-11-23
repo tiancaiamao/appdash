@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	htmpl "html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -78,6 +79,7 @@ func New(r *Router, base *url.URL) (*App, error) {
 		baseURL: base,
 	}
 
+	r.r.Get(ViewTrace).Handler(handlerFunc(app.viewTrace))
 	r.r.Get(RootRoute).Handler(handlerFunc(app.serveRoot))
 	r.r.Get(TraceRoute).Handler(handlerFunc(app.serveTrace))
 	r.r.Get(TraceSpanRoute).Handler(handlerFunc(app.serveTrace))
@@ -106,6 +108,58 @@ func (a *App) serveRoot(w http.ResponseWriter, r *http.Request) error {
 	}{})
 }
 
+func HandleTiDB(w http.ResponseWriter, r *http.Request) {
+	data := `<html>
+		<head >
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+		<title >Form Page: sampleform</title>
+		</head>
+		<body>
+		<h1>TiDB Trace Viewer</h1>
+		  <form method="post" action="/web/trace/view" >
+		  <input type="text" name="data" />
+		  <input type="submit" name="submit" value="View Trace" />
+		  </form>
+		</body>
+		</html>`
+	buf := bytes.NewBufferString(data)
+	io.Copy(w, buf)
+}
+
+func (a *App) viewTrace(w http.ResponseWriter, r *http.Request) error {
+	defer r.Body.Close()
+
+	var err error
+	var data []byte
+	// Read the uploaded JSON trace data.
+	data1 := r.FormValue("data")
+	if data1 == "" {
+		data, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			return err
+		}
+	} else {
+		data = []byte(data1)
+	}
+
+	// Unmarshal the trace.
+	var traces []*appdash.Trace
+	err = json.Unmarshal(data, &traces)
+	if err != nil {
+		log.Println(data1)
+		return err
+	}
+	if len(traces) != 1 {
+		return errors.New("invalid trace format")
+	}
+
+	store := appdash.NewMemoryStore()
+	a.Store = store
+	a.Queryer = store
+	a.uploadTraces(traces...)
+	return a.serveTraceID(w, r, traces[0].Span.ID.Trace)
+}
+
 func (a *App) serveTrace(w http.ResponseWriter, r *http.Request) error {
 	v := mux.Vars(r)
 
@@ -130,12 +184,16 @@ func (a *App) serveTrace(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	return a.serveTraceID(w, r, traceID)
+}
 
+func (a *App) serveTraceID(w http.ResponseWriter, r *http.Request, traceID appdash.ID) error {
 	trace, err := a.Store.Trace(traceID)
 	if err != nil {
 		return err
 	}
 
+	v := mux.Vars(r)
 	// Get sub-span if the Span route var is present.
 	if spanIDStr := v["Span"]; spanIDStr != "" {
 		var spanID appdash.ID
@@ -217,6 +275,10 @@ func (a *App) serveTrace(w http.ResponseWriter, r *http.Request) error {
 		Permalink:         permalink.String(),
 		JSONTrace:         string(jsonTrace),
 	})
+}
+
+func (a *App) ServeTraces(w http.ResponseWriter, r *http.Request) {
+	a.serveTraces(w, r)
 }
 
 func (a *App) serveTraces(w http.ResponseWriter, r *http.Request) error {
