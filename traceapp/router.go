@@ -10,7 +10,7 @@ import (
 
 // Traceapp's route names.
 const (
-	ViewTrace             = "web.trace.view"
+	ViewTrace             = "traceapp.view"
 	RootRoute             = "traceapp.root"               // route name for root
 	StaticRoute           = "traceapp.static"             // route name for static data files
 	TraceRoute            = "traceapp.trace"              // route name for a single trace page
